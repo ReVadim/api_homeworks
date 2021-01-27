@@ -1,9 +1,9 @@
 import requests
 from pprint import pprint
 
-# token = input("input token: ")
-with open('token.txt', 'r') as f:
-    token = f.read().strip()
+token = input("input token: ")
+# with open('token.txt', 'r') as f:
+#     token = f.read().strip()
 
 url = 'http://api.vk.com/method/'
 version = '5.126'
@@ -56,6 +56,22 @@ class VkUser:
             all_friends[str(item['first_name'] + ' ' + item['last_name'])] = item['id']
         print(f"Мои {len(all_friends)} друзей: ", all_friends)
 
+    def get_albums(self, owner_id=None):
+        if id is None:
+            owner_id = self.owner_id
+        album_url = self.url + 'photos.getAlbums'
+        album_params = {
+            'user_id': owner_id,
+            'photo_sizes': 1
+        }
+        response = requests.get(album_url, params={**self.params, **album_params}).json()['response']
+        count_albums = response['count']
+        print("Количество альбомов = ", count_albums)
+        albums_list = {}
+        for items in response['items']:
+            albums_list[str(items['id'])] = items['title']
+        print(albums_list)
+
     def __and__(self, source_id=None, other_id=None):
         if source_id is None:
             source_id = self.owner_id
@@ -74,9 +90,10 @@ class VkUser:
 user_1 = VkUser()
 user_2 = VkUser(76065479)
 
-user_1.get_friends()
-user_2.get_friends()
-
-user_1.user_info()
-user_2.user_info(76065479)
-common_users = user_1 & user_2
+# user_1.get_friends()
+# user_2.get_friends()
+#
+# user_1.user_info()
+user_1.get_albums()
+# user_2.user_info(76065479)
+# common_users = user_1 & user_2
